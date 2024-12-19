@@ -72,7 +72,7 @@ export async function Leaderboard() {
                     </td>
                     <td className="py-2 whitespace-nowrap text-lg">
                       <span className={tableCellStyles}>
-                        {leaderboardData.ens}
+                        {leaderboardData.ens || leaderboardData.address}
                       </span>
                     </td>
                     <td className="py-2 whitespace-nowrap text-lg">
