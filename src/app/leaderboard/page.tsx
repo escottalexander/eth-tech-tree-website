@@ -1,18 +1,17 @@
+import { PageProps } from '../../../.next/types/app/page'
 import { Leaderboard } from '../components/leaderboard'
 
-type Props = {
-  searchParams: { [key: string]: string | string[] | undefined }
-}
-
-export default async function LeaderboardPage({ searchParams }: Props) {
+export default async function LeaderboardPage({
+  searchParams,
+}: PageProps) {
   // Handle both single batch parameter and multiple batch parameters
-  const batchParams = (await searchParams).batch
-  const batches = Array.isArray(batchParams)
-    ? batchParams.map(Number)
-    : batchParams?.includes(',')
-    ? batchParams.split(',').map(Number)
-    : batchParams
-    ? [Number(batchParams)]
+  const batchParam = (await searchParams).batch
+  const batches = Array.isArray(batchParam)
+    ? batchParam.map(Number)
+    : typeof batchParam === 'string' && batchParam.includes(',')
+    ? batchParam.split(',').map(Number)
+    : batchParam
+    ? [Number(batchParam)]
     : undefined
 
   // Handle graduates filter
