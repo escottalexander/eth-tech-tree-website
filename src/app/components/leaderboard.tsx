@@ -105,7 +105,7 @@ export async function Leaderboard({ batches, graduatesOnly = false }: Leaderboar
       {((batches?.length ?? 0) > 0 || graduatesOnly) && (
         <p className="mt-2 text-center text-md text-gray-600">
           {[
-            batches?.length && `Showing batch${batches.length > 1 ? 'es' : ''} ${batches.sort().join(', ')}`,
+            batches?.length && `Showing batch${batches.length > 1 ? 'es' : ''} ${batches.sort((a, b) => a - b).join(', ')}`,
             graduatesOnly && ', graduates only'
           ]
             .filter(Boolean)
