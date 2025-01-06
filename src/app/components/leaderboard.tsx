@@ -190,7 +190,7 @@ export async function Leaderboard({ batches, graduatesOnly = false, builders }: 
                       <td className="py-2 whitespace-nowrap text-lg">
                         <span className={tableCellStyles}>
                           {leaderboardData.ens || leaderboardData.address}
-                          {isGraduate && ' 🎓'}
+                          {batches && isGraduate && ' 🎓'}
                         </span>
                       </td>
                       {showBatchColumn && (
