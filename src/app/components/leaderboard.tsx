@@ -23,22 +23,24 @@ type Data = {
 type LeaderboardProps = {
   batches?: number[]
   graduatesOnly?: boolean
+  builders?: string[]
 }
 
 const tableCellStyles = 'px-6 block border-l-2 border-gray-200 leading-tight'
 
-export async function Leaderboard({ batches, graduatesOnly = false }: LeaderboardProps) {
+export async function Leaderboard({ batches, graduatesOnly = false, builders }: LeaderboardProps) {
   // First fetch all builders to get batch information
   const buildersResponse = await fetch('https://buidlguidl-v3.ew.r.appspot.com/builders', {
     cache: 'no-store', // Prevent caching
   })
-  const builders: BuilderData[] = await buildersResponse.json()
+  const buildersData: BuilderData[] = await buildersResponse.json()
   
-  // Create maps for batch number and graduate status
+  // Create maps for batch number, graduate status, and ENS lookup
   const builderBatchMap = new Map<string, number | undefined>()
   const builderGraduateMap = new Map<string, boolean>()
+  const ensToAddressMap = new Map<string, string>()
   
-  builders.forEach(builder => {
+  buildersData.forEach(builder => {
     const address = builder.id.toLowerCase()
     builderBatchMap.set(
       address,
@@ -48,6 +50,9 @@ export async function Leaderboard({ batches, graduatesOnly = false }: Leaderboar
       address,
       builder.batch?.status === 'graduate'
     )
+    if (builder.ens) {
+      ensToAddressMap.set(builder.ens.toLowerCase(), address)
+    }
   })
   
   // Fetch leaderboard data
@@ -60,11 +65,24 @@ export async function Leaderboard({ batches, graduatesOnly = false }: Leaderboar
     return null
   }
 
-  // Filter leaderboard based on batches and graduate status if specified
+  // Filter leaderboard based on batches, graduate status, and specific builders if specified
   const filteredLeaderboard = data.leaderboard.filter(entry => {
     const address = entry.address.toLowerCase()
     const builderBatch = builderBatchMap.get(address)
     const isGraduate = builderGraduateMap.get(address)
+
+    // Check if we're filtering by specific builders
+    if (builders?.length) {
+      const matchesBuilder = builders.some(builder => {
+        const builderLower = builder.toLowerCase()
+        return (
+          builderLower === address || 
+          builderLower === entry.ens?.toLowerCase() ||
+          ensToAddressMap.get(builderLower) === address
+        )
+      })
+      if (!matchesBuilder) return false
+    }
 
     // Check graduate status if required
     if (graduatesOnly && !isGraduate) {
@@ -93,6 +111,7 @@ export async function Leaderboard({ batches, graduatesOnly = false }: Leaderboar
           No entries found
           {batches && ` for batches: ${batches.join(', ')}`}
           {graduatesOnly && ' (graduates only)'}
+          {builders?.length && ` for specified builders`}
         </p>
       </div>
     )
@@ -106,11 +125,12 @@ export async function Leaderboard({ batches, graduatesOnly = false }: Leaderboar
       <p className="mt-4 text-center text-lg font-medium sm:text-xl/8">
         Complete challenges to score points and climb the leaderboard!
       </p>
-      {((batches?.length ?? 0) > 0 || graduatesOnly) && (
+      {((batches?.length ?? 0) > 0 || graduatesOnly || builders?.length) && (
         <p className="mt-2 text-center text-md text-gray-600">
           {[
             batches?.length && `Showing batch${batches.length > 1 ? 'es' : ''} ${batches.sort((a, b) => a - b).join(', ')}`,
-            graduatesOnly && ', graduates only'
+            graduatesOnly && 'graduates only',
+            builders?.length && `${builders.length} selected builders`
           ]
             .filter(Boolean)
             .join(' • ')}
