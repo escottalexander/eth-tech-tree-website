@@ -29,7 +29,9 @@ const tableCellStyles = 'px-6 block border-l-2 border-gray-200 leading-tight'
 
 export async function Leaderboard({ batches, graduatesOnly = false }: LeaderboardProps) {
   // First fetch all builders to get batch information
-  const buildersResponse = await fetch('https://buidlguidl-v3.ew.r.appspot.com/builders')
+  const buildersResponse = await fetch('https://buidlguidl-v3.ew.r.appspot.com/builders', {
+    cache: 'no-store', // Prevent caching
+  })
   const builders: BuilderData[] = await buildersResponse.json()
   
   // Create maps for batch number and graduate status
@@ -49,7 +51,9 @@ export async function Leaderboard({ batches, graduatesOnly = false }: Leaderboar
   })
   
   // Fetch leaderboard data
-  const response = await fetch('https://ethdevtechtree.buidlguidl.com/leaderboard')
+  const response = await fetch('https://ethdevtechtree.buidlguidl.com/leaderboard',{
+    cache: 'no-store', // Prevent caching
+  })
   const data: Data | null = await response.json()
 
   if (!response.ok || !data || data.leaderboard.length === 0) {
