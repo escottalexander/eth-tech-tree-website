@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import CopyToClipboard from 'react-copy-to-clipboard'
 
 function CopyIcon() {
   return (
@@ -46,21 +45,22 @@ function CheckIcon() {
 
 export function Copy() {
   const [npxCommandCopied, setNpxCommandCopied] = useState(false)
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText('npx eth-tech-tree@latest')
+      setNpxCommandCopied(true)
+      setTimeout(() => {
+        setNpxCommandCopied(false)
+      }, 800)
+    } catch {
+      // no-op
+    }
+  }
   return (
     <div>
-      <CopyToClipboard
-        text={'npx eth-tech-tree'}
-        onCopy={() => {
-          setNpxCommandCopied(true)
-          setTimeout(() => {
-            setNpxCommandCopied(false)
-          }, 800)
-        }}
-      >
-        <button className="">
-          {npxCommandCopied ? <CheckIcon /> : <CopyIcon />}
-        </button>
-      </CopyToClipboard>
+      <button className="" onClick={handleCopy}>
+        {npxCommandCopied ? <CheckIcon /> : <CopyIcon />}
+      </button>
     </div>
   )
 }
