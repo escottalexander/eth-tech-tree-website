@@ -48,7 +48,7 @@ export default function Home() {
             <div className="p-4 bg-slate-800 border-t border-gray-700 rounded-b-md">
               <pre className="text-lg">
                 <code>
-                  npx <span className="text-green-400">eth-tech-tree</span>
+                  npx <span className="text-green-400">eth-tech-tree@latest</span>
                 </code>
               </pre>
             </div>

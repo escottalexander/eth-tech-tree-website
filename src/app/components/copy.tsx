@@ -49,7 +49,7 @@ export function Copy() {
   return (
     <div>
       <CopyToClipboard
-        text={'npx eth-tech-tree'}
+        text={'npx eth-tech-tree@latest'}
         onCopy={() => {
           setNpxCommandCopied(true)
           setTimeout(() => {
